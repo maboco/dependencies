@@ -8,9 +8,8 @@ ADD . /tmp/dependencies
 
 WORKDIR /tmp/dependencies
 
-RUN pip3 install --upgrade --upgrade pip 
-
-RUN pip3 install -r requirements.txt
+RUN pip3 install --upgrade --upgrade pip && \
+    pip3 install -r requirements.txt
 
 WORKDIR /tmp
 
