@@ -1,8 +1,7 @@
-import requests
-import argparse
-import json
-from Models.query import Query
+import requests, argparse, json
+from Models.querybatch import QueryBatch
 from Models.package import Package
+from Repository.osv import OsvQuery, OsvQueryBatch
 
 def args():
     parser = argparse.ArgumentParser(prog="Dependencies", description="Check requirements.txt vulns on OSV and PyPi ")
@@ -16,19 +15,19 @@ def spaces():
         print("------------------------------------------------------------------------------------")
 
 def simple(pack):
-    query = Query()
+    queryBatch = QueryBatch()
 
     for pack in packs:
-        query.set_package(pack.get_osv_format())
-    
-    url_osv  = "https://api.osv.dev/v1/querybatch"
-    
-    response_osv = requests.request("POST", url=url_osv, data=json.dumps(query.__dict__)).json()
+        queryBatch.set_package(pack.get_osv_format())
+
+    osvQueryBatch = OsvQueryBatch(queryBatch.get_query())
+
+    response_osv = osvQueryBatch.send_query().json()
 
     for i in range(len(packs)):
         p = packs[i].get_pack() | response_osv["results"][i]
         p["url"] = "https://pypi.org/project/"+p['name']+"/"+p['version']
-
+        
         print(p['name']+"/"+p['version']+" - "+p["url"])
 
         if "vulns" in p:

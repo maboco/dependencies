@@ -1,4 +1,4 @@
-class Query:
+class QueryBatch:
     def __init__(self):
         self.queries = []
     
